@@ -9,7 +9,7 @@ class LoadTestClass extends Simulation
 {
   val users = csv("users.csv")
   
-  val sessionHeaders = Map("JSESSIONID" -> "${jsessionid}")
+  val sessionHeaders = Map("Cookie" -> "${cookie}")
   
   private val httpConf = http
     .baseUrl("http://localhost:9020")
@@ -19,11 +19,13 @@ class LoadTestClass extends Simulation
     .exec(http("Get big file")
       .get("/testrest/data/CreativeCloudSet-Up.exe")
       .basicAuth("${login}", "${password}")
-      .check(header("JSESSIONID").saveAs("jsessionid")))
+      .check(header("Set-Cookie").saveAs("cookie")))
+    .exec(http("Get short file")
+      .get("/testrest/data/description.txt")
+      .headers(sessionHeaders))
     .exec(http("logout")
       .get("/logout")
       .headers(sessionHeaders))
 
-  setUp(
-    scn.inject(atOnceUsers(1))).protocols(httpConf)
+  setUp(scn.inject(atOnceUsers(400))).protocols(httpConf)
 }
