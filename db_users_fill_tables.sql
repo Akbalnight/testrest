@@ -1,9 +1,9 @@
-DELETE FROM permissions WHERE id > 190;
-DELETE FROM role_permissions WHERE id_permission > 190;
-INSERT INTO permissions (id, description,path,method,json_data) VALUES (191, 'Тестовый сервис', '/testrest/**', 'POST','{}');
-INSERT INTO role_permissions (role, id_permission) VALUES ('ROLE_USER', 191);
-INSERT INTO permissions (id, description,path,method,json_data) VALUES (192, 'Тестовый сервис', '/testrest/**', 'GET','{}');
-INSERT INTO role_permissions (role, id_permission) VALUES ('ROLE_USER', 192);
+DELETE FROM permissions WHERE id > 200;
+DELETE FROM role_permissions WHERE id_permission > 200;
+INSERT INTO permissions (id, description,path,method,json_data) VALUES (201, 'Тестовый сервис', '/testrest/**', 'POST','{}');
+INSERT INTO role_permissions (role, id_permission) VALUES ('ROLE_USER', 201);
+INSERT INTO permissions (id, description,path,method,json_data) VALUES (202, 'Тестовый сервис', '/testrest/**', 'GET','{}');
+INSERT INTO role_permissions (role, id_permission) VALUES ('ROLE_USER', 202);
 
 DELETE FROM users WHERE username='loaduser1';
 DELETE FROM user_roles WHERE username='loaduser1';
