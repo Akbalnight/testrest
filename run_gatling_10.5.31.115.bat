@@ -1,0 +1,1 @@
+call gradlew.bat -b loadtest.gradle -Ppropfile=10.5.31.115 copy
