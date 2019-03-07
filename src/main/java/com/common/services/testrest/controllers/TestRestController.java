@@ -47,4 +47,17 @@ public class TestRestController
     {
         return bean.get("big", response);
     }
+    
+    @GetMapping("/data/empty")
+    @ApiOperation(value = "Получить обьем данных")
+    public void empty(HttpServletRequest request, HttpServletResponse response)
+    {
+    }
+    
+    @GetMapping("/data/doc")
+    @ApiOperation(value = "Получить обьем данных")
+    public ResponseEntity<InputStreamResource> doc(HttpServletRequest request, HttpServletResponse response)
+    {
+        return bean.get("doc", response);
+    }
 }

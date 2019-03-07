@@ -44,6 +44,9 @@ public class TestRestBean
         b = new byte[BIG * MBYTE];
         new Random().nextBytes(b);
         data.put("big", b);
+        b = new byte[1024000];
+        new Random().nextBytes(b);
+        data.put("doc", b);
     }
 
     public ResponseEntity<InputStreamResource> get(String key, HttpServletResponse response)

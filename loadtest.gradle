@@ -1,0 +1,46 @@
+import org.apache.tools.ant.filters.*
+
+plugins {
+  id 'org.hidetake.ssh' version '2.9.0'
+}
+
+apply from: "${propfile}.properties"
+
+ssh.settings {
+  knownHosts = allowAnyHosts
+}
+
+remotes {
+  webServer {
+    host = remote_host
+    user = remote_user
+    password = remote_password
+  }
+}
+
+task copy{
+  doLast {
+    ssh.settings {
+      knownHosts = allowAnyHosts
+    }
+    ssh.run {
+      session(remotes.webServer) {
+	new File('gatling_script/resources').listFiles().each{put (from:it, into: gatling_dir + "/user-files/resources")}
+	new File('gatling_script/simulations').listFiles().each{put (from:it, into: gatling_dir + "/user-files/simulations")}
+      }
+    }
+  }
+}
+
+task run{
+  doLast {
+    ssh.settings {
+      knownHosts = allowAnyHosts
+    }
+    ssh.run {
+      session(remotes.webServer) {
+        execute(gatling_dir + "/bin/run.sh")
+      }
+    }
+  }
+}
