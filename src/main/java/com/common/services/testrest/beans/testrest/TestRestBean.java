@@ -58,6 +58,7 @@ public class TestRestBean
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentLength(data.size());
 
         ResponseEntity<InputStreamResource> result = new ResponseEntity<InputStreamResource>(
             inputStreamResource, headers,

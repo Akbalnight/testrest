@@ -28,34 +28,34 @@ public class TestRestController
     private TestRestBean bean;
 
     @GetMapping("/data/small")
-    @ApiOperation(value = "Получить обьем данных")
+    @ApiOperation(value = "Получить обьем данных 10 Мб")
     public ResponseEntity<InputStreamResource> smalldata(HttpServletRequest request, HttpServletResponse response)
     {
         return bean.get("small", response);
     }
     
     @GetMapping("/data/middle")
-    @ApiOperation(value = "Получить обьем данных")
+    @ApiOperation(value = "Получить обьем данных 50 Мб")
     public ResponseEntity<InputStreamResource> middledata(HttpServletRequest request, HttpServletResponse response)
     {
         return bean.get("middle", response);
     }
     
     @GetMapping("/data/big")
-    @ApiOperation(value = "Получить обьем данных")
+    @ApiOperation(value = "Получить обьем данных 100 Мб")
     public ResponseEntity<InputStreamResource> bigdata(HttpServletRequest request, HttpServletResponse response)
     {
         return bean.get("big", response);
     }
     
     @GetMapping("/data/empty")
-    @ApiOperation(value = "Получить обьем данных")
+    @ApiOperation(value = "Получить обьем данных 0 Мб")
     public void empty(HttpServletRequest request, HttpServletResponse response)
     {
     }
     
     @GetMapping("/data/doc")
-    @ApiOperation(value = "Получить обьем данных")
+    @ApiOperation(value = "Получить обьем данных 1 МБ")
     public ResponseEntity<InputStreamResource> doc(HttpServletRequest request, HttpServletResponse response)
     {
         return bean.get("doc", response);
