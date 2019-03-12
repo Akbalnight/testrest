@@ -26,8 +26,9 @@ import org.springframework.stereotype.Component;
 public class TestRestBean
 {
     private static int MBYTE  = 1048576;
-    private static int SMALL  = 10;
-    private static int MIDDLE = 50;
+    private static int DOC    =   1;
+    private static int SMALL  =  10;
+    private static int MIDDLE =  50;
     private static int BIG    = 100;
     
     private Map<String, byte[]> data = new HashMap<String, byte[]>();
@@ -44,7 +45,7 @@ public class TestRestBean
         b = new byte[BIG * MBYTE];
         new Random().nextBytes(b);
         data.put("big", b);
-        b = new byte[1024000];
+        b = new byte[DOC * MBYTE];
         new Random().nextBytes(b);
         data.put("doc", b);
     }
