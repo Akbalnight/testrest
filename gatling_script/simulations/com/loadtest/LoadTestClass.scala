@@ -7,7 +7,11 @@ import io.gatling.http.Predef._
 
 class LoadTestClass extends Simulation
 {
-  val withPause = false
+  val numbers = 400
+  val secondstimeoutMin = 1
+  val secondstimeoutMax = 10
+  
+  val withPause = true
   val users = csv("users.csv")
   
   val sessionHeaders = Map("Cookie" -> "${cookie}")
@@ -23,7 +27,7 @@ class LoadTestClass extends Simulation
     var result: ScenarioBuilder = builder
     if (withPause)
     {
-      result = result.pause(1, 5)
+      result = result.pause(secondstimeoutMin, secondstimeoutMax)
     }
     return result.exec(http("Get empty data")
       .get("/testrest/data/empty")
@@ -35,7 +39,7 @@ class LoadTestClass extends Simulation
     var result: ScenarioBuilder = builder
     if (withPause)
     {
-      result = result.pause(1, 5)
+      result = result.pause(secondstimeoutMin, secondstimeoutMax)
     }
     return result.exec(http("Get doc data (1 Mb)")
       .get("/testrest/data/doc")
@@ -47,7 +51,7 @@ class LoadTestClass extends Simulation
     var result: ScenarioBuilder = builder
     if (withPause)
     {
-      result = result.pause(1, 5)
+      result = result.pause(secondstimeoutMin, secondstimeoutMax)
     }
     return result.exec(http("Get small data (10 Mb)")
       .get("/testrest/data/small")
@@ -59,7 +63,7 @@ class LoadTestClass extends Simulation
     var result: ScenarioBuilder = builder
     if (withPause)
     {
-      result = result.pause(1, 5)
+      result = result.pause(secondstimeoutMin, secondstimeoutMax)
     }
     return result.exec(http("Get middle data (50 Mb)")
       .get("/testrest/data/middle")
@@ -71,7 +75,7 @@ class LoadTestClass extends Simulation
     var result: ScenarioBuilder = builder
     if (withPause)
     {
-      result = result.pause(1, 5)
+      result = result.pause(secondstimeoutMin, secondstimeoutMax)
     }
     return result.exec(http("Get big data (100 Mb)")
       .get("/testrest/data/big")
@@ -83,7 +87,7 @@ class LoadTestClass extends Simulation
 
   if (withPause)
   {
-    scn = scn.pause(1, 5)
+    scn = scn.pause(secondstimeoutMin, secondstimeoutMax)
   }
     
   scn = scn.exec(http("currentUser")
@@ -96,13 +100,20 @@ class LoadTestClass extends Simulation
   scn = empty(scn, sessionHeaders, withPause)
   scn = doc(scn, sessionHeaders, withPause)
   scn = doc(scn, sessionHeaders, withPause)
-//  scn = small(scn, sessionHeaders, withPause)
-//  scn = middle(scn, sessionHeaders, withPause)
-//  scn = big(scn, sessionHeaders, withPause)
+  scn = small(scn, sessionHeaders, withPause)
+  scn = middle(scn, sessionHeaders, withPause)
+  scn = big(scn, sessionHeaders, withPause)
+  scn = empty(scn, sessionHeaders, withPause)
+  scn = doc(scn, sessionHeaders, withPause)
+  
+  if (withPause)
+  {
+    scn = scn.pause(secondstimeoutMin, secondstimeoutMax)
+  }
 
   scn = scn.exec(http("logout")
     .get("/logout")
     .headers(sessionHeaders))
 
-  setUp(scn.inject(atOnceUsers(400))).protocols(httpConf)
+  setUp(scn.inject(atOnceUsers(numbers))).protocols(httpConf)
 }
