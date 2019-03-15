@@ -8,8 +8,8 @@ import io.gatling.http.Predef._
 class LoadTestClass extends Simulation
 {
   val numbers = 400
-  val secondstimeoutMin = 1
-  val secondstimeoutMax = 10
+  val secondstimeoutMin = 5
+  val secondstimeoutMax = 15
   
   val withPause = true
   val users = csv("users.csv")
@@ -19,65 +19,49 @@ class LoadTestClass extends Simulation
   private val httpConf = http
     .baseUrl("http://10.5.31.67:9001")
 
-//    private val httpConf = http
-//      .baseUrl("http://localhost:9020")
+//  private val httpConf = http
+//    .baseUrl("http://localhost:9020")
 
-  def empty(builder: ScenarioBuilder, sessionHeaders: scala.collection.immutable.Map[String, String], withPause: Boolean) : ScenarioBuilder =
+  def pause(builder: ScenarioBuilder) : ScenarioBuilder =
   {
-    var result: ScenarioBuilder = builder
     if (withPause)
     {
-      result = result.pause(secondstimeoutMin, secondstimeoutMax)
+      return builder.pause(secondstimeoutMin, secondstimeoutMax)
     }
-    return result.exec(http("Get empty data")
+    return builder
+  }
+
+  def empty(builder: ScenarioBuilder) : ScenarioBuilder =
+  {
+    return pause(builder).exec(http("Get empty data")
       .get("/testrest/data/empty")
       .headers(sessionHeaders))
   }
   
-  def doc(builder: ScenarioBuilder, sessionHeaders: scala.collection.immutable.Map[String, String], withPause: Boolean) : ScenarioBuilder =
+  def doc(builder: ScenarioBuilder) : ScenarioBuilder =
   {
-    var result: ScenarioBuilder = builder
-    if (withPause)
-    {
-      result = result.pause(secondstimeoutMin, secondstimeoutMax)
-    }
-    return result.exec(http("Get doc data (1 Mb)")
+    return pause(builder).exec(http("Get doc data (1 Mb)")
       .get("/testrest/data/doc")
       .headers(sessionHeaders))
   }
   
-  def small(builder: ScenarioBuilder, sessionHeaders: scala.collection.immutable.Map[String, String], withPause: Boolean) : ScenarioBuilder =
+  def small(builder: ScenarioBuilder) : ScenarioBuilder =
   {
-    var result: ScenarioBuilder = builder
-    if (withPause)
-    {
-      result = result.pause(secondstimeoutMin, secondstimeoutMax)
-    }
-    return result.exec(http("Get small data (10 Mb)")
+    return pause(builder).exec(http("Get small data (10 Mb)")
       .get("/testrest/data/small")
       .headers(sessionHeaders))
   }
   
-  def middle(builder: ScenarioBuilder, sessionHeaders: scala.collection.immutable.Map[String, String], withPause: Boolean) : ScenarioBuilder =
+  def middle(builder: ScenarioBuilder) : ScenarioBuilder =
   {
-    var result: ScenarioBuilder = builder
-    if (withPause)
-    {
-      result = result.pause(secondstimeoutMin, secondstimeoutMax)
-    }
-    return result.exec(http("Get middle data (50 Mb)")
+    return pause(builder).exec(http("Get middle data (50 Mb)")
       .get("/testrest/data/middle")
       .headers(sessionHeaders))
   }
   
-  def big(builder: ScenarioBuilder, sessionHeaders: scala.collection.immutable.Map[String, String], withPause: Boolean) : ScenarioBuilder =
+  def big(builder: ScenarioBuilder) : ScenarioBuilder =
   {
-    var result: ScenarioBuilder = builder
-    if (withPause)
-    {
-      result = result.pause(secondstimeoutMin, secondstimeoutMax)
-    }
-    return result.exec(http("Get big data (100 Mb)")
+    return pause(builder).exec(http("Get big data (100 Mb)")
       .get("/testrest/data/big")
       .headers(sessionHeaders))
   }
@@ -85,35 +69,26 @@ class LoadTestClass extends Simulation
   private var scn: ScenarioBuilder = scenario("Scenario")
     .feed(users)
 
-  if (withPause)
-  {
-    scn = scn.pause(secondstimeoutMin, secondstimeoutMax)
-  }
-    
   scn = scn.exec(http("currentUser")
     .get("/auth/currentUser")
     .basicAuth("${login}", "${password}")
     .check(header("Set-Cookie").saveAs("cookie")))
 
-  scn = empty(scn, sessionHeaders, withPause)
-  scn = doc(scn, sessionHeaders, withPause)
-  scn = empty(scn, sessionHeaders, withPause)
-  scn = doc(scn, sessionHeaders, withPause)
-  scn = doc(scn, sessionHeaders, withPause)
-  scn = small(scn, sessionHeaders, withPause)
-  scn = middle(scn, sessionHeaders, withPause)
-  scn = big(scn, sessionHeaders, withPause)
-  scn = empty(scn, sessionHeaders, withPause)
-  scn = doc(scn, sessionHeaders, withPause)
-  
-  if (withPause)
-  {
-    scn = scn.pause(secondstimeoutMin, secondstimeoutMax)
-  }
+  scn = empty(scn)
+  scn = doc(scn)
+  scn = empty(scn)
+  scn = doc(scn)
+  scn = doc(scn)
+  scn = small(scn)
+  scn = middle(scn)
+  scn = big(scn)
+  scn = empty(scn)
+  scn = doc(scn)
 
-  scn = scn.exec(http("logout")
+  scn = pause(scn).exec(http("logout")
     .get("/logout")
     .headers(sessionHeaders))
 
-  setUp(scn.inject(atOnceUsers(numbers))).protocols(httpConf)
+  //setUp(scn.inject(atOnceUsers(numbers))).protocols(httpConf)
+  setUp(scn.inject(rampUsers(numbers) during(30))).protocols(httpConf)
 }
